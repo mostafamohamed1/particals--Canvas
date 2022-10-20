@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas> </canvas>
+
+    <script>
+      // Vector Class
+
+      const canvas = document.querySelector('canvas');
+
+      const range = (min, max) => {
+        return Math.random() * (max - min) + min;
+      };
+
+      class Vector {
+        constructor(x, y) {
+          this.x = x;
+          this.y = y;
+        }
+      }
+
+      class Agent {
+        constructor(x, y) {
+          this.pos = new Vector(x, y);
+          this.vel = new Vector(range(-1, 1), range(-1, 1));
+          this.radius = range(4, 12);
+        }
+
+        update() {
+          this.pos.x += this.vel.x;
+          this.pos.y += this.vel.y;
+        }
+
+        bounce(width, height) {
+          if (this.pos.x <= 0 || this.pos.x >= width) this.vel.x *= -1;
+          if (this.pos.y <= 0 || this.pos.y >= height) this.vel.y *= -1;
+        }
+
+        draw(context) {
+          context.save();
+          context.translate(this.pos.x, this.pos.y);
+          context.lineWidth = 4;
+          context.beginPath();
+          context.arc(0, 0, this.radius, 0, Math.PI * 2);
+          context.fill();
+          context.stroke();
+          context.restore();
+        }
+      }
+
+      let agents = [];
+      const width = 500;
+      const height = 500;
+
+      for (let i = 0; i < 40; i++) {
+        const x = range(0, width);
+        const y = range(0, height);
+        agents.push(new Agent(x, y));
+      }
+
+      const init = () => {
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext('2d');
+        context.fillStyle = 'white';
+        context.fillRect(0, 0, width, height);
+
+        agents.forEach((agent) => {
+          agent.update();
+          agent.draw(context);
+          agent.bounce(width, height);
+        });
+
+        requestAnimationFrame(init);
+      };
+
+      init();
+    </script>
+  </body>
+</html>
