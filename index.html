@@ -3,6 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, shrink-to-fit=0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
     <title>Document</title>
     <style>
       * {
@@ -17,6 +22,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
+      }
+      canvas {
+        box-shadow: 0 0 5px 5px rgba(0 0 0 / 0.05);
       }
     </style>
   </head>
@@ -36,6 +44,12 @@
         constructor(x, y) {
           this.x = x;
           this.y = y;
+        }
+
+        getDistance(v) {
+          const dx = this.x - v.x;
+          const dy = this.y - v.y;
+          return Math.sqrt(dx * dx + dy * dy);
         }
       }
 
@@ -84,6 +98,25 @@
         const context = canvas.getContext('2d');
         context.fillStyle = 'white';
         context.fillRect(0, 0, width, height);
+
+        // lets draw the lines
+
+        for (let i = 0; i < agents.length; i++) {
+          const agent = agents[i];
+          for (let j = 0; j < agents.length; j++) {
+            const other = agents[j];
+
+            // it's to many so lets modify it more
+            const dist = agent.pos.getDistance(other.pos);
+
+            if (dist > 200) continue;
+
+            context.beginPath();
+            context.moveTo(agent.pos.x, agent.pos.y);
+            context.lineTo(other.pos.x, other.pos.y);
+            context.stroke();
+          }
+        }
 
         agents.forEach((agent) => {
           agent.update();
